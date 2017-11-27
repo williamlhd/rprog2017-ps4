@@ -15,7 +15,7 @@ ggplot(data = bitcoin.trend) + geom_line(mapping = aes(x= date, y = hits))
 bitcoin.trend <- bitcoin.trend %>% filter(date >= as.Date("2009-01-01"))
 ggplot(data = bitcoin.trend) + 
   geom_line(mapping = aes(x= date, y = hits)) +
-  geom_vline(xintercept = as.Date("2017-01-20"), color = "red") #trump election
+  geom_vline(xintercept = as.Date("2017-01-20"), color = "red") #trump inauguration
   
 
 library(Quandl)
