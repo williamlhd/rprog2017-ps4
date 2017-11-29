@@ -9,22 +9,37 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Cheese is good.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+library(gtrendsR)
+library(ggplot2)
+library(tidyverse)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+camembert.trend <- gtrends(c("camembert"), gprop = "web", time = "all")[[1]]
+class(camembert.trend)
+head(camembert.trend)
+class(camembert.trend$date)
 
-```{r cars}
-summary(cars)
+ggplot(data = camembert.trend) + geom_line(mapping = aes(x= date, y = hits))
+?gtrends
+
+camembert.trend <- camembert.trend %>% filter(date >= as.Date("2009-01-01"))
+ggplot(data = camembert.trend) + 
+  geom_line(mapping = aes(x= date, y = hits)) +
+  geom_vline(xintercept = as.Date("2017-01-20"), color = "red") #trump inauguration
+  
+library(Quandl)
+camembert.price <- Quandl("BCHARTS/BITSTAMPUSD")
+camembert.price <- camembert.price %>% filter(Date %in% camembert.trend$date) %>% select(Date, Close) %>% rename(date = Date, price = Close) %>% mutate(price = price*100/max(price))
+
+camembert <- left_join(x = camembert.trend, y= camembert.price, by = "date")
+head(camembert)
+
+ggplot(data = camembert) + 
+  geom_line(mapping = aes(x= date, y = hits)) +
+  geom_line(mapping = aes(x= date, y = price), color = "gray") + 
+  geom_vline(xintercept = as.Date("2017-01-20"), color = "red")
+
+
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
